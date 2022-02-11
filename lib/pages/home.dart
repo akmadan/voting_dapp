@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:voting_dapp/pages/electionInfo.dart';
+import 'package:voting_dapp/services/functions.dart';
 import 'package:voting_dapp/utils/constants.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -13,6 +15,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   Client? httpClient;
   Web3Client? ethClient;
+  TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -29,13 +32,32 @@ class _HomeState extends State<Home> {
       ),
       body: Center(
         child: Container(
+          padding: EdgeInsets.all(14),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              TextField(
+                controller: textEditingController,
+                decoration: InputDecoration(filled: true),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Container(
+                width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
-                    onPressed: () {}, child: Text('Start Election')),
-              )
+                    onPressed: () {
+                      startElection(textEditingController.text, ethClient!);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ElectionInfo(
+                                  ethClient: ethClient!,
+                                  electionName: textEditingController.text)));
+                    },
+                    child: Text('Start Election')),
+              ),
             ],
           ),
         ),

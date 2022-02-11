@@ -55,16 +55,17 @@ Future<List> getCandidatesNum(Web3Client ethClient) async {
   return result;
 }
 
-Future<String> authorizeVoter(Web3Client ethClient) async {
+Future<String> authorizeVoter(
+    String voterAddress1, Web3Client ethClient) async {
   var response = await callFunction("authorizeVoter",
-      [EthereumAddress.fromHex(voterAddress)], ethClient, ownerPrivateKey);
-  print('Candidate Authorized Successfully');
+      [EthereumAddress.fromHex(voterAddress1)], ethClient, ownerPrivateKey);
+  print('Voter Authorized Successfully');
   return response;
 }
 
 Future<String> vote(int candidateIndex, Web3Client ethClient) async {
   var response =
       await callFunction("vote", [candidateIndex], ethClient, voterPrivateKey);
-  print('Candidate Voted Successfully');
+  print('Voter Voted Successfully');
   return response;
 }
