@@ -64,8 +64,15 @@ Future<String> authorizeVoter(
 }
 
 Future<String> vote(int candidateIndex, Web3Client ethClient) async {
-  var response =
-      await callFunction("vote", [candidateIndex], ethClient, voterPrivateKey);
+  var response = await callFunction(
+      "vote", [BigInt.from(candidateIndex)], ethClient, voterPrivateKey);
   print('Voter Voted Successfully');
   return response;
+}
+
+Future<List> candiateInfo(int index, Web3Client ethClient) async {
+  List<dynamic> result =
+      await query('candidateInfo', [BigInt.from(index)], ethClient);
+  print(result);
+  return result;
 }

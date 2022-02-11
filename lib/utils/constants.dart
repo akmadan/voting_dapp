@@ -1,7 +1,7 @@
 String infura_rinkbyURL =
     "https://kovan.infura.io/v3/7e0fcba16fce454c96616d04abdbf3a4";
 
-String contractAddress = "0x88c69984f92B4a039B3af9097F99aAe01E45d1Fc";
+String contractAddress = "0xc81a0dED222f673Dc9ebB54F05481EAF9CC3e2B1";
 String ownerPrivateKey =
     "9e2c82ef68ad0baf4bc0fa84bbdc84e39e5f9a49d874cb635f895985ea45d2f8";
 String voterAddress = "0x75510559F9128cAec97872321660b37B9e530dfB";

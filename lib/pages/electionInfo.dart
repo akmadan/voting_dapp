@@ -104,12 +104,57 @@ class _ElectionInfoState extends State<ElectionInfo> {
                 SizedBox(width: 10),
                 ElevatedButton(
                     onPressed: () {
+                      // candiateInfo(0, widget.ethClient);
                       authorizeVoter(
                           votertextEditingController.text, widget.ethClient);
                     },
                     child: Text('Done'))
               ],
             ),
+            SizedBox(
+              height: 20,
+            ),
+            Divider(),
+            FutureBuilder<List>(
+                future: getCandidatesNum(widget.ethClient),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return Column(
+                    children: [
+                      for (int i = 0; i < (snapshot.data![0]).toInt(); i++)
+                        FutureBuilder<List>(
+                            future: candiateInfo(i, widget.ethClient),
+                            builder: (context, candidatesnapshot) {
+                              if (candidatesnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+
+                              return ListTile(
+                                title: Text('Name: ' +
+                                    candidatesnapshot.data![0][0].toString()),
+                                subtitle: Text('Votes: ' +
+                                    candidatesnapshot.data![0][1].toString()),
+                                trailing: ElevatedButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Colors.green)),
+                                    onPressed: () {
+                                      vote(i, widget.ethClient);
+                                    },
+                                    child: Text('Vote')),
+                              );
+                            })
+                    ],
+                  );
+                }),
           ],
         ),
       ),
