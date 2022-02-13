@@ -1,12 +1,14 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:voting_dapp/services/functions.dart';
 import 'package:web3dart/web3dart.dart';
 
 class ElectionInfo extends StatefulWidget {
-  final String electionName;
   final Web3Client ethClient;
+  final String electionName;
   const ElectionInfo(
-      {Key? key, required this.electionName, required this.ethClient})
+      {Key? key, required this.ethClient, required this.electionName})
       : super(key: key);
 
   @override
@@ -14,15 +16,12 @@ class ElectionInfo extends StatefulWidget {
 }
 
 class _ElectionInfoState extends State<ElectionInfo> {
-  TextEditingController candidatetextEditingController =
-      TextEditingController();
-  TextEditingController votertextEditingController = TextEditingController();
+  TextEditingController addCandidateController = TextEditingController();
+  TextEditingController authorizeVoterController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.electionName),
-      ),
+      appBar: AppBar(title: Text(widget.electionName)),
       body: Container(
         padding: EdgeInsets.all(14),
         child: Column(
@@ -31,7 +30,7 @@ class _ElectionInfoState extends State<ElectionInfo> {
               height: 20,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
                   children: [
@@ -50,20 +49,27 @@ class _ElectionInfoState extends State<ElectionInfo> {
                                 fontSize: 50, fontWeight: FontWeight.bold),
                           );
                         }),
-                    Text('Candidates')
+                    Text('Total Candidates')
                   ],
-                ),
-                SizedBox(
-                  width: 60,
                 ),
                 Column(
                   children: [
-                    Text(
-                      '0',
-                      style:
-                          TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-                    ),
-                    Text('Votes')
+                    FutureBuilder<List>(
+                        future: getTotalVotes(widget.ethClient),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return Text(
+                            snapshot.data![0].toString(),
+                            style: TextStyle(
+                                fontSize: 50, fontWeight: FontWeight.bold),
+                          );
+                        }),
+                    Text('Total Votes')
                   ],
                 ),
               ],
@@ -75,86 +81,75 @@ class _ElectionInfoState extends State<ElectionInfo> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: candidatetextEditingController,
-                    decoration: InputDecoration(
-                        filled: true, hintText: 'Enter Candidate Name'),
+                    controller: addCandidateController,
+                    decoration:
+                        InputDecoration(hintText: 'Enter Candidate Name'),
                   ),
                 ),
-                SizedBox(width: 10),
                 ElevatedButton(
                     onPressed: () {
-                      addCandidate(candidatetextEditingController.text,
-                          widget.ethClient);
+                      addCandidate(
+                          addCandidateController.text, widget.ethClient);
                     },
-                    child: Text('Done'))
+                    child: Text('Add Candidate'))
               ],
-            ),
-            SizedBox(
-              height: 20,
             ),
             Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: votertextEditingController,
-                    decoration: InputDecoration(
-                        filled: true, hintText: 'Authorize Voter Address'),
+                    controller: authorizeVoterController,
+                    decoration:
+                        InputDecoration(hintText: 'Enter Voter address'),
                   ),
                 ),
-                SizedBox(width: 10),
                 ElevatedButton(
                     onPressed: () {
-                      // candiateInfo(0, widget.ethClient);
                       authorizeVoter(
-                          votertextEditingController.text, widget.ethClient);
+                          authorizeVoterController.text, widget.ethClient);
                     },
-                    child: Text('Done'))
+                    child: Text('Add Voter'))
               ],
-            ),
-            SizedBox(
-              height: 20,
             ),
             Divider(),
             FutureBuilder<List>(
-                future: getCandidatesNum(widget.ethClient),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+              future: getCandidatesNum(widget.ethClient),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
                   return Column(
                     children: [
-                      for (int i = 0; i < (snapshot.data![0]).toInt(); i++)
+                      for (int i = 0; i < snapshot.data![0].toInt(); i++)
                         FutureBuilder<List>(
-                            future: candiateInfo(i, widget.ethClient),
+                            future: candidateInfo(i, widget.ethClient),
                             builder: (context, candidatesnapshot) {
                               if (candidatesnapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
+                              } else {
+                                return ListTile(
+                                  title: Text('Name: ' +
+                                      candidatesnapshot.data![0][0].toString()),
+                                  subtitle: Text('Votes: ' +
+                                      candidatesnapshot.data![0][1].toString()),
+                                  trailing: ElevatedButton(
+                                      onPressed: () {
+                                        vote(i, widget.ethClient);
+                                      },
+                                      child: Text('Vote')),
+                                );
                               }
-
-                              return ListTile(
-                                title: Text('Name: ' +
-                                    candidatesnapshot.data![0][0].toString()),
-                                subtitle: Text('Votes: ' +
-                                    candidatesnapshot.data![0][1].toString()),
-                                trailing: ElevatedButton(
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.green)),
-                                    onPressed: () {
-                                      vote(i, widget.ethClient);
-                                    },
-                                    child: Text('Vote')),
-                              );
                             })
                     ],
                   );
-                }),
+                }
+              },
+            )
           ],
         ),
       ),

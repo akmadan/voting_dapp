@@ -3,7 +3,7 @@
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "_name",
+				"name": "_candidateName",
 				"type": "string"
 			}
 		],
@@ -108,6 +108,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "getTotalVotes",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
@@ -123,7 +136,7 @@
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "_name",
+				"name": "_electionName",
 				"type": "string"
 			}
 		],

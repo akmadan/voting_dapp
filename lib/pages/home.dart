@@ -15,12 +15,12 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   Client? httpClient;
   Web3Client? ethClient;
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     httpClient = Client();
-    ethClient = Web3Client(infura_rinkbyURL, httpClient!);
+    ethClient = Web3Client(infura_url, httpClient!);
     super.initState();
   }
 
@@ -28,38 +28,38 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Voting DApp'),
+        title: Text('Start Election'),
       ),
-      body: Center(
-        child: Container(
-          padding: EdgeInsets.all(14),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: textEditingController,
-                decoration: InputDecoration(filled: true),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
+      body: Container(
+        padding: EdgeInsets.all(14),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                  filled: true, hintText: 'Enter election name'),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
                 width: double.infinity,
-                height: 50,
+                height: 45,
                 child: ElevatedButton(
-                    onPressed: () {
-                      startElection(textEditingController.text, ethClient!);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ElectionInfo(
-                                  ethClient: ethClient!,
-                                  electionName: textEditingController.text)));
+                    onPressed: () async {
+                      if (controller.text.length > 0) {
+                        await startElection(controller.text, ethClient!);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ElectionInfo(
+                                    ethClient: ethClient!,
+                                    electionName: controller.text)));
+                      }
                     },
-                    child: Text('Start Election')),
-              ),
-            ],
-          ),
+                    child: Text('Start Election')))
+          ],
         ),
       ),
     );
