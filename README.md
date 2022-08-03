@@ -1,6 +1,6 @@
 # voting_dapp
 
-A new Flutter project.
+- [Video Tutorial](https://www.youtube.com/watch?v=dva65eIqWjo&ab_channel=AkshitMadan)
 
 ## Getting Started
 
